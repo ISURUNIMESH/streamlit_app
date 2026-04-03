@@ -1,0 +1,11 @@
+# .dockerignore
+venv/
+__pycache__/
+*.pyc
+.git/
+.streamlit/secrets.toml # NEVER include secrets
+*.ipynb
+# Build and run Docker image
+docker build -t fyp-app .
+docker run -p 8501:8501 fyp-app
+# Access at: http://localhost:8501
