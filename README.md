@@ -71,21 +71,7 @@ project/
 
 ---
 
-## 🛠️ Installation (Local Setup)
 
-```bash
-# Clone repository
-git clone https://github.com/YOUR_USERNAME/streamlit_app.git
-cd streamlit_app
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run app
-streamlit run app.py
-```
-
----
 
 ## 🐳 Docker Setup
 
