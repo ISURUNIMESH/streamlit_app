@@ -1,3 +1,6 @@
+from pathlib import Path
+
+import pandas as pd
 import streamlit as st
 # Clear specific function's cache
 if st.button('Reload Data'):
@@ -11,7 +14,16 @@ if st.button('Clear All Caches'):
 # (functions are re-run when any argument changes)
 @st.cache_data
 def load_versioned(path: str, version: int):
- return pd.read_csv(path)
+ file_path = Path(path)
+ if file_path.exists():
+  return pd.read_csv(file_path)
+ return pd.DataFrame(
+  {
+   'feature_a': [1, 2, 3],
+   'feature_b': [4, 5, 6],
+   'label': [0, 1, 0],
+  }
+ )
 df = load_versioned('data.csv', version=2) # version change = re-run
 
 
