@@ -1,19 +1,29 @@
+FROM python:3.11-slim   # ✅ REQUIRED (this was missing)
+
+WORKDIR /app
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
- build-essential \
- libglib2.0-0 \
- && rm -rf /var/lib/apt/lists/*
+    build-essential \
+    libglib2.0-0 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-# Copy application files
+
+# Copy project files
 COPY . .
-# Expose Streamlit default port
+
+# Expose Streamlit port
 EXPOSE 8501
+
 # Health check
 HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health || exit 1
-# Run the application
-ENTRYPOINT ['streamlit', 'run', 'app.py',
- '--server.port=8501',
- '--server.address=0.0.0.0',
- '--server.headless=true']
+
+# Run app
+ENTRYPOINT ["streamlit", "run", "app.py",
+ "--server.port=8501",
+ "--server.address=0.0.0.0",
+ "--server.headless=true"]
