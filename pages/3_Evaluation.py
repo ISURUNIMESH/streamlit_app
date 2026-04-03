@@ -35,42 +35,54 @@ import pandas as pd
 import numpy as np
 @st.cache_resource
 def load_model():
- with open('models/disease_classifier.pkl', 'rb') as f:
-    return pickle.load(f)
+ model_path = Path('models/disease_classifier.pkl')
+ if not model_path.exists():
+  return None
+ with open(model_path, 'rb') as f:
+  return pickle.load(f)
 @st.cache_resource
 def load_scaler():
- with open('models/scaler.pkl', 'rb') as f:
-    return pickle.load(f)
+ scaler_path = Path('models/scaler.pkl')
+ if not scaler_path.exists():
+  return None
+ with open(scaler_path, 'rb') as f:
+  return pickle.load(f)
 model = load_model()
 scaler = load_scaler()
 st.title('Disease Risk Predictor')
-with st.form('predict_form'):
- col1, col2 = st.columns(2)
- age = col1.number_input('Age', 18, 100, 45)
- glucose = col1.number_input('Glucose Level', 50, 300, 120)
- bmi = col2.number_input('BMI', 10.0, 60.0, 25.0)
- bp = col2.number_input('Blood Pressure', 40, 200, 80)
- submitted = st.form_submit_button('Predict Risk', type='primary')
-if submitted:
- features = np.array([[age, glucose, bmi, bp]])
- scaled = scaler.transform(features)
- prob = model.predict_proba(scaled)[0][1]
- label = 'High Risk' if prob > 0.5 else 'Low Risk'
- col1, col2 = st.columns(2)
- col1.metric('Prediction', label)
- col2.metric('Probability', f'{prob:.1%}')
- if prob > 0.5:
-    st.error(f'High risk detected ({prob:.1%} confidence). Consult a physician.')
- else:
-    st.success(f'Low risk ({1-prob:.1%} confidence). Continue healthy habits.')
+if model is None or scaler is None:
+ st.warning('Model artefacts not found: models/disease_classifier.pkl or models/scaler.pkl')
+else:
+ with st.form('predict_form'):
+  col1, col2 = st.columns(2)
+  age = col1.number_input('Age', 18, 100, 45)
+  glucose = col1.number_input('Glucose Level', 50, 300, 120)
+  bmi = col2.number_input('BMI', 10.0, 60.0, 25.0)
+  bp = col2.number_input('Blood Pressure', 40, 200, 80)
+  submitted = st.form_submit_button('Predict Risk', type='primary')
+ if submitted:
+  features = np.array([[age, glucose, bmi, bp]])
+  scaled = scaler.transform(features)
+  prob = model.predict_proba(scaled)[0][1]
+  label = 'High Risk' if prob > 0.5 else 'Low Risk'
+  col1, col2 = st.columns(2)
+  col1.metric('Prediction', label)
+  col2.metric('Probability', f'{prob:.1%}')
+  if prob > 0.5:
+   st.error(f'High risk detected ({prob:.1%} confidence). Consult a physician.')
+  else:
+   st.success(f'Low risk ({1-prob:.1%} confidence). Continue healthy habits.')
 
 import streamlit as st
 import numpy as np
 from PIL import Image
 @st.cache_resource
 def load_keras_model():
+ model_path = Path('models/cnn_classifier.h5')
+ if not model_path.exists():
+  return None
  import tensorflow as tf
- return tf.keras.models.load_model('models/cnn_classifier.h5')
+ return tf.keras.models.load_model(model_path)
 CLASS_NAMES = ['Healthy', 'Pneumonia', 'COVID-19']
 st.title('Chest X-Ray Classifier')
 uploaded = st.file_uploader('Upload X-Ray Image',
@@ -81,13 +93,16 @@ if uploaded:
  if st.button('Classify', type='primary'):
     with st.spinner('Analysing image...'):
         model = load_keras_model()
- arr = np.array(img.resize((224, 224))) / 255.0
- arr = np.expand_dims(arr, axis=0)
- pred = model.predict(arr)[0]
- st.subheader('Classification Results')
- for cls, conf in zip(CLASS_NAMES, pred):
-    st.metric(cls, f'{conf:.1%}')
- st.progress(float(conf))
+        if model is None:
+         st.error('Model artefact not found: models/cnn_classifier.h5')
+        else:
+         arr = np.array(img.resize((224, 224))) / 255.0
+         arr = np.expand_dims(arr, axis=0)
+         pred = model.predict(arr)[0]
+         st.subheader('Classification Results')
+         for cls, conf in zip(CLASS_NAMES, pred):
+            st.metric(cls, f'{conf:.1%}')
+         st.progress(float(conf))
 
 
 import streamlit as st
