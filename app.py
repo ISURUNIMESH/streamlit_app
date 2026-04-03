@@ -531,8 +531,16 @@ Use the sidebar to navigate between sections:
 
 import streamlit as st
 
-openai_key = st.secrets["api_keys"]["openai_key"]
-db_pass = st.secrets["database"]["password"]
+api_keys = st.secrets.get("api_keys", {})
+database_cfg = st.secrets.get("database", {})
+
+openai_key = api_keys.get("openai_key")
+db_pass = database_cfg.get("password")
+
+if not openai_key:
+ st.info("Missing secret: api_keys.openai_key")
+if not db_pass:
+ st.info("Missing secret: database.password")
 
 
 
