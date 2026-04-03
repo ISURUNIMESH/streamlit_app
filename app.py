@@ -529,7 +529,10 @@ Use the sidebar to navigate between sections:
 ''')
 
 
+import streamlit as st
 
+openai_key = st.secrets["api_keys"]["openai_key"]
+db_pass = st.secrets["database"]["password"]
 
 
 
