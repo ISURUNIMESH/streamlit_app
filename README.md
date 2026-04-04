@@ -1,4 +1,4 @@
-# 🧠 Intelligent Systems FYP — Streamlit App
+# 🧠 Intelligent Systems FYP  Streamlit App
 
 ## 🚀 Live Demo
 
@@ -139,7 +139,7 @@ Key libraries:
 ## 👨‍🎓 Author
 
 **Isuru Nimesh**
-3rd Year — 2nd Semester
+3rd Year  2nd Semester
 Faculty of IT | Horizon Campus
 
 ---
